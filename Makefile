@@ -4,14 +4,19 @@ CARGO = cargo
 
 all: main main.html
 
-main: main.o
-	$(LINK.cc) $^ $(LOADLIBES) $(LDLIBS) -o $@
+main: librust_plugin.a
+	$(LINK.cc) main.o $(LOADLIBES) $(LDLIBS) -o $@
+main: LDLIBS=-L. -lrust_plugin
 
 main.html: main.cpp
 	$(EMCC) $^ -o $@
 
-rust_plugin.wasm:
+
+RUST_TARGET = wasm32-unknown-emscripten
+
+.PHONY: librust_plugin.a
+librust_plugin.a:
 	cd rust-plugin && $(CARGO) +nightly build \
 		-Zbuild-std=std,panic_abort \
-		--target wasm32-unknown-unknown --release
-	cp rust-plugin/target/wasm32-unknown-unknown/release/rust_plugin.wasm $@
+		--target $(RUST_TARGET) --release
+	cp rust-plugin/target/$(RUST_TARGET)/release/librust_plugin.a $@
