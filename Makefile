@@ -6,13 +6,13 @@ all: main main.html
 
 main: librust_plugin.a
 	$(LINK.cc) main.o $(LOADLIBES) $(LDLIBS) -o $@
-main: LDLIBS=-L. -lrust_plugin
+main: LDLIBS = -L. -lrust_plugin
 
-main.html: main.cpp
-	$(EMCC) $^ -o $@
+main.html: main.cpp librust_plugin.a
+	$(EMCC) $(LDFLAGS) $^ -o $@
+main.html: LDFLAGS = -sERROR_ON_UNDEFINED_SYMBOLS=0
 
-
-RUST_TARGET = wasm32-unknown-emscripten
+RUST_TARGET = wasm32-unknown-unknown
 
 .PHONY: librust_plugin.a
 librust_plugin.a:
